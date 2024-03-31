@@ -8,6 +8,7 @@ import com.nhoryzon.mc.farmersdelight.registry.BlockEntityTypesRegistry;
 import com.nhoryzon.mc.farmersdelight.registry.ParticleTypesRegistry;
 import com.nhoryzon.mc.farmersdelight.registry.SoundsRegistry;
 import com.nhoryzon.mc.farmersdelight.util.CompoundTagUtils;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -159,6 +160,7 @@ public class SkilletBlockEntity extends SyncedBlockEntity implements ItemStackIn
     }
 
     private void fromTag(NbtCompound nbt) {
+        clear();
         readInventoryNbt(nbt);
         cookTime = nbt.getInt(CompoundTagUtils.TAG_KEY_COOK_TIME);
         cookTimeTotal = nbt.getInt(CompoundTagUtils.TAG_KEY_COOK_TIME_TOTAL);
@@ -233,6 +235,12 @@ public class SkilletBlockEntity extends SyncedBlockEntity implements ItemStackIn
 
     public boolean hasStoredStack() {
         return !getStoredStack().isEmpty();
+    }
+
+    @Override
+    public void onContentsChanged(int slot) {
+        ItemStackInventory.super.onContentsChanged(slot);
+        Objects.requireNonNull(world).updateListeners(getPos(), getCachedState(), getCachedState(), Block.NOTIFY_LISTENERS);
     }
 
     @Override
